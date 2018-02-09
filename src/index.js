@@ -97,8 +97,7 @@ function nodeModulesPaths(_import, _path) {
 }
 
 function getImports(code) {
-  //FIX: comment
-  const reg = /(\s|\n|\r)*import\s+"(.+)"\s*;/
+  const reg = /(;|\s|\n|\r)*import\s+"(.+)"\s*;/
   const imports = []
   let match
   while((match = code.match(reg))!=null) {

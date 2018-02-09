@@ -109,8 +109,7 @@ function nodeModulesPaths(_import, _path) {
 }
 
 function getImports(code) {
-  //FIX: comment
-  var reg = /(\s|\n|\r)*import\s+"(.+)"\s*;/;
+  var reg = /(;|\s|\n|\r)*import\s+"(.+)"\s*;/;
   var imports = [];
   var match;
   while((match = code.match(reg))!=null) {
