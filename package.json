@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-solidity",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "build/rollup-plugin-solidity.cjs.js",
   "module": "build/rollup-plugin-solidity.es.js",
