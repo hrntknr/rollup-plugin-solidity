@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-solidity",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "build/rollup-plugin-solidity.cjs.js",
   "module": "build/rollup-plugin-solidity.es.js",
@@ -8,6 +8,13 @@
     "build": "rollup -c",
     "test": "mocha test"
   },
+  "keywords": [
+    "rollup",
+    "rollup-plugin",
+    "solidity"
+  ],
+  "license": "MIT",
+  "author": "Takanori Hirano <hrn.takanori@gmail.com>",
   "dependencies": {
     "rollup-pluginutils": "^2.0.1"
   },
