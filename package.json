@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-solidity",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Converts solidity files to modules",
   "main": "build/rollup-plugin-solidity.cjs.js",
   "module": "build/rollup-plugin-solidity.es.js",
