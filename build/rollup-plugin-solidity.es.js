@@ -39,16 +39,16 @@ function createCode(code, id) {
       if(files[i].parent == null || load.findIndex(function (data){ return data.id==files[i].parent; })!=-1) {
         var alreadyLoadIndex = load.findIndex(function (data){ return data.id==files[i].id; });
         if(alreadyLoadIndex!=-1) {
-          if(files[i].version != null && files[i].version == version) {
-            throw new Error('version error')
-          }
-          if(version == null && files[i].version != null) {
-            version = files[i].version;
-          }
           load.splice(alreadyLoadIndex, 1);
           load.push(files[i]);
           files.splice(i, 1);
           return 'break'
+        }
+        if(files[i].version != null && files[i].version != version) {
+          throw new Error('version error')
+        }
+        if(version == null && files[i].version != null) {
+          version = files[i].version;
         }
         load.push(files[i]);
         files.splice(i, 1);
