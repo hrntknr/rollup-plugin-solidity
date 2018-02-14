@@ -1,5 +1,5 @@
 'use strict';
 
-var main = "contract test {\n}\n"
+var main = "pragma solidity ^0.4.18;\n\n\ncontract test {\n}\n\n"
 
 module.exports = main;
