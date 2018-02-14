@@ -34,7 +34,7 @@ describe('rollup-plugin-solidity', function() {
         solidity()
       ]
     }).then(executeBundle).then(code=>{
-      assert.equal(code, readFile('samples/module/build.js'))
+      assert.equal(code, readFile('samples/package/build.js'))
     })
   })
 

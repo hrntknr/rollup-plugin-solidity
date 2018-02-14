@@ -29,12 +29,19 @@ export default function solidity(opts = {}) {
 
 function createCode(code, id) {
   let files = readFile(code, id)
+  let {version} = getVersion(code)
   const load = []
   while(files.length != 0) {
     for(let i in files) {
       if(files[i].parent == null || load.findIndex(data=>data.id==files[i].parent)!=-1) {
         const alreadyLoadIndex = load.findIndex(data=>data.id==files[i].id)
         if(alreadyLoadIndex!=-1) {
+          if(files[i].version != null && files[i].version == version) {
+            throw new Error('version error')
+          }
+          if(version == null && files[i].version != null) {
+            version = files[i].version
+          }
           load.splice(alreadyLoadIndex, 1)
           load.push(files[i])
           files.splice(i, 1)
@@ -46,16 +53,18 @@ function createCode(code, id) {
       }
     }
   }
-  return load.map(data=>data.code).reverse().join('\n')
+  const versionCode = version?`pragma solidity ${version};\n`:''
+  return versionCode + load.map(data=>data.code).reverse().join('\n')
 }
 
 function readFile(code, id, parent=null) {
   let pwd = path.dirname(id)
-  const {imports, code: baseCode} = getImports(code)
-
+  const {version, code: _code} = getVersion(code)
+  const {imports, code: baseCode} = getImports(_code)
   let result = [{
     id,
     code: baseCode,
+    version,
     parent
   }]
   imports.forEach((_import)=>{
@@ -97,12 +106,21 @@ function nodeModulesPaths(_import, _path) {
 }
 
 function getImports(code) {
-  const reg = /(;|\s|\n|\r)*import\s+"(.+)"\s*;/
+  const reg = /((;|\s|\n|\r)*)import\s+"(.+)"(\s*);/
   const imports = []
   let match
   while((match = code.match(reg))!=null) {
-    code = code.replace(reg, '')
-    imports.push(match[2])
+    code = code.replace(reg, '$2')
+    imports.push(match[3])
   }
   return {imports, code}
+}
+
+function getVersion(code) {
+  const reg = /((;|\s|\n|\r)*)pragma\s+solidity\s+(.+)\s*;/
+  const match = code.match(reg)
+  let version = null
+  if(match)version = match[3]
+  code = code.replace(reg, '$2')
+  return {version, code}
 }
