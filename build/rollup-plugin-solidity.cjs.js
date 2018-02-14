@@ -35,12 +35,20 @@ function solidity(opts) {
 
 function createCode(code, id) {
   var files = readFile(code, id);
+  var ref = getVersion(code);
+  var version = ref.version;
   var load = [];
   while(files.length != 0) {
     var loop = function ( i ) {
       if(files[i].parent == null || load.findIndex(function (data){ return data.id==files[i].parent; })!=-1) {
         var alreadyLoadIndex = load.findIndex(function (data){ return data.id==files[i].id; });
         if(alreadyLoadIndex!=-1) {
+          if(files[i].version != null && files[i].version == version) {
+            throw new Error('version error')
+          }
+          if(version == null && files[i].version != null) {
+            version = files[i].version;
+          }
           load.splice(alreadyLoadIndex, 1);
           load.push(files[i]);
           files.splice(i, 1);
@@ -58,20 +66,24 @@ function createCode(code, id) {
       if ( returned === 'break' ) break;
     }
   }
-  return load.map(function (data){ return data.code; }).reverse().join('\n')
+  var versionCode = version?("pragma solidity " + version + ";\n"):'';
+  return versionCode + load.map(function (data){ return data.code; }).reverse().join('\n')
 }
 
 function readFile(code, id, parent) {
   if ( parent === void 0 ) parent=null;
 
   var pwd = path.dirname(id);
-  var ref = getImports(code);
-  var imports = ref.imports;
-  var baseCode = ref.code;
-
+  var ref = getVersion(code);
+  var version = ref.version;
+  var _code = ref.code;
+  var ref$1 = getImports(_code);
+  var imports = ref$1.imports;
+  var baseCode = ref$1.code;
   var result = [{
     id: id,
     code: baseCode,
+    version: version,
     parent: parent
   }];
   imports.forEach(function (_import){
@@ -113,14 +125,23 @@ function nodeModulesPaths(_import, _path) {
 }
 
 function getImports(code) {
-  var reg = /(;|\s|\n|\r)*import\s+"(.+)"\s*;/;
+  var reg = /((;|\s|\n|\r)*)import\s+"(.+)"(\s*);/;
   var imports = [];
   var match;
   while((match = code.match(reg))!=null) {
-    code = code.replace(reg, '');
-    imports.push(match[2]);
+    code = code.replace(reg, '$2');
+    imports.push(match[3]);
   }
   return {imports: imports, code: code}
+}
+
+function getVersion(code) {
+  var reg = /((;|\s|\n|\r)*)pragma\s+solidity\s+(.+)\s*;/;
+  var match = code.match(reg);
+  var version = null;
+  if(match){ version = match[3]; }
+  code = code.replace(reg, '$2');
+  return {version: version, code: code}
 }
 
 module.exports = solidity;
